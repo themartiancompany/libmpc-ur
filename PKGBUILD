@@ -24,6 +24,10 @@ build() {
   
   ./configure --prefix=/usr
   make
+}
+
+check() {
+  cd "${srcdir}/mpc-${pkgver}"
   make check
 }
 
