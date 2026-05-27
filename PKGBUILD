@@ -130,7 +130,7 @@ _pkg_alt=multiprecision
 pkgname="lib${_pkg}"
 pkgver=1.4.1
 _commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
-pkgrel=1
+pkgrel=2
 _pkgdesc=(
   'Library for the arithmetic of complex'
   'numbers with arbitrarily high precision.'
