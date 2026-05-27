@@ -77,8 +77,11 @@ if [[ ! -v "_evmfs" ]]; then
   fi
 fi
 if [[ ! -v "_ns" ]]; then
-  _ns="themartiancompany"
-  _ns="gnu"
+  if [[ "${_evmfs}" == "true" ]]; then
+    _ns="themartiancompany"
+  elif [[ "${_evmfs}" == "false" ]]; then
+    _ns="gnu"
+  fi
 fi
 if [[ ! -v "_git" ]]; then
   if [[ "${_ns}" == "gnu" ]]; then
@@ -129,7 +132,8 @@ _pkg=mpc
 _pkg_alt=multiprecision
 pkgname="lib${_pkg}"
 pkgver=1.4.1
-_commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
+_commit="532a18ae8222f928c58f7ffd1b4f0122062172bd"
+_bundle_commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
 pkgrel=2
 _pkgdesc=(
   'Library for the arithmetic of complex'
@@ -146,7 +150,7 @@ arch=(
   pentium4
   x86_64
 )
-url="http://www.multiprecision.org"
+url="http://www.${_pkg_alt}.org"
 license=(
   "LGPL-3.0-only"
 )
@@ -188,6 +192,8 @@ if [[ ! -v "_tag" ]]; then
         _tag="${pkgver/_/-}"
       fi
     fi
+  elif [[ "${_git}" == "true" ]]; then
+    _tag="${_commit}"
   fi
 fi
 _tarname="${_pkg}-${_tag}"
@@ -195,21 +201,19 @@ _tarfile="${_tarname}.${_archive_format}"
 _evmfs_network="100"
 _evmfs_address="0x69470b18f8b8b5f92b48f6199dcb147b4be96571"
 _evmfs_dir="evmfs://${_evmfs_network}/${_evmfs_address}/${_evmfs_ns}"
-_evmfs_uri="${_evmfs_dir}/${_sum}"
+_evmfs_uri="${_evmfs_dir}/${_bundle_sum}"
 _evmfs_src="${_tarfile}::${_evmfs_uri}"
-_sig_uri="${_evmfs_dir}/${_sig_sum}"
+_sig_uri="${_evmfs_dir}/${_bundle_sig_sum}"
 _sig_src="${_tarfile}.sig::${_sig_uri}"
-if [[ "${_git}" == "false" ]]; then
-fi
-
 if [[ "${_evmfs}" == "true" ]]; then
-  if [[ "${_git}" == "false" ]]; then
+  if [[ "${_git}" == "true" ]]; then
     _src="${_evmfs_src}"
+    _sum="${_bundle_sig_sum}"
     source+=(
       "${_sig_src}"
     )
     sha256sums+=(
-      "${_sig_sum}"
+      "${_bundle_sig_sum}"
     )
   fi
 elif [[ "${_evmfs}" == "false" ]]; then
