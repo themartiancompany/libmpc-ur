@@ -64,23 +64,65 @@ else
   _compiler="gcc"
   _libcompiler="gcc-libs"
 fi
+_evmfs_available="$(
+  command \
+    -v \
+    "evmfs" || \
+    true)"
+if [[ ! -v "_evmfs" ]]; then
+  if [[ "${_evmfs_available}" != "" ]]; then
+    _evmfs="true"
+  elif [[ "${_evmfs_available}" == "" ]]; then
+    _evmfs="false"
+  fi
+fi
 if [[ ! -v "_ns" ]]; then
   _ns="themartiancompany"
   _ns="gnu"
 fi
 if [[ ! -v "_git" ]]; then
-  if [[ ! -v "_git" ]]; then
+  if [[ "${_ns}" == "gnu" ]]; then
     _git="false"
+  elif [[ "${_ns}" == "themartiancompany" ]]; then
+    _git="true"
+  fi
+fi
+if [[ ! -v "_git_service" ]]; then
+  if [[ "${_ns}" == "gnu" ]]; then
+    _git_service="gnu"
+  elif [[ "${_ns}" == "themartiancompany" ]]; then
+    _git_service="github"
   fi
 fi
 if [[ ! -v "_tag_name" ]]; then
   if [[ "${_ns}" == "gnu" ]]; then
     _tag_name="pkgver"
+  elif [[ "${_ns}" == "themartiancompany" ]]; then
+    _tag_name="commit"
   fi
 fi
 if [[ ! -v "_archive_format" ]]; then
   if [[ "${_ns}" == "gnu" ]]; then
     _archive_format="tar.xz"
+  fi
+fi
+if [[ ! -v "_archive_format" ]]; then
+  if [[ "${_git}" == "true" ]]; then
+    if [[ "${_evmfs}" == "true" ]]; then
+      _archive_format="bundle"
+    elif [[ "${_evmfs}" == "false" ]]; then
+      _archive_format="git"
+    fi
+  elif [[ "${_git}" == "false" ]]; then
+    if [[ "${_ns}" == "gnu" ]]; then
+      _archive_format="tar.xz"
+    elif [[ "${_ns}" == "themartiancompany" ]]; then
+      if [[ "${_git_service}" == "github" ]]; then
+        _archive_format="zip"
+      elif [[ "${_git_service}" == "gitlab" ]]; then
+        _archive_format="tar.gz"
+      fi
+    fi
   fi
 fi
 _pkg=mpc
@@ -122,13 +164,23 @@ if [[ "${_os}" == "Msys" ]]; then
     "windows-default-manifest"
   )
 fi
+if [[ "${_git}" == "true" ]]; then
+  makedepends+=(
+    "git"
+  )
+fi
+if [[ "${_evmfs}" == "true" ]]; then
+  makedepends+=(
+    "evmfs"
+  )
+fi
 provides=(
   "${_pkg_alt}=${pkgver}"
 )
 # Tallero
 _evmfs_ns="0x6ec7cC56dCeC0a00CB15E97C64B1a5Ec7A31403c"
 _bundle_sum="4c58b9172bdf60fad14f115a6d613c3adab1914fa7d461de6da870ab6d35b7fe"
-_bundle_sum="a9c129ca1b913ca0bddfbe451abdff8723aa735c3a4d5240d64f15236bd7ba0b"
+_bundle_sig_sum="a9c129ca1b913ca0bddfbe451abdff8723aa735c3a4d5240d64f15236bd7ba0b"
 if [[ ! -v "_tag" ]]; then
   if [[ "${_git}" == "false" ]]; then
     if [[ "${_ns}" == "gnu" ]]; then
@@ -140,30 +192,84 @@ if [[ ! -v "_tag" ]]; then
 fi
 _tarname="${_pkg}-${_tag}"
 _tarfile="${_tarname}.${_archive_format}"
+_evmfs_network="100"
+_evmfs_address="0x69470b18f8b8b5f92b48f6199dcb147b4be96571"
+_evmfs_dir="evmfs://${_evmfs_network}/${_evmfs_address}/${_evmfs_ns}"
+_evmfs_uri="${_evmfs_dir}/${_sum}"
+_evmfs_src="${_tarfile}::${_evmfs_uri}"
+_sig_uri="${_evmfs_dir}/${_sig_sum}"
+_sig_src="${_tarfile}.sig::${_sig_uri}"
 if [[ "${_git}" == "false" ]]; then
-  if [[ "${_ns}" == "gnu" ]]; then
-    _http="https://ftp.gnu.org"
-    _url="${_http}/${_ns}/${_pkg}"
-    _uri="${_url}/${_tarname}.tar.xz"
+fi
+
+if [[ "${_evmfs}" == "true" ]]; then
+  if [[ "${_git}" == "false" ]]; then
+    _src="${_evmfs_src}"
+    source+=(
+      "${_sig_src}"
+    )
+    sha256sums+=(
+      "${_sig_sum}"
+    )
+  fi
+elif [[ "${_evmfs}" == "false" ]]; then
+  if [[ "${_git}" == true ]]; then
+    _src="${_tarname}::git+${_url}#${_tag_name}=${_tag}?signed"
+    _sum="SKIP"
+  elif [[ "${_git}" == false ]]; then
+    _uri=""
+    if [[ "${_ns}" == "gnu" ]]; then
+      _http="https://ftp.gnu.org"
+      _url="${_http}/${_ns}/${_pkg}"
+      _uri="${_url}/${_tarname}.tar.xz"
+    elif [[ "${_ns}" == "themartiancompany" ]]; then
+      if [[ "${_git_service}" == "github" ]]; then
+        if [[ "${_tag_name}" == "commit" ]]; then
+          _uri="${_url}/archive/${_commit}.${_archive_format}"
+          _sum="${_github_sum}"
+        fi
+      elif [[ "${_git_service}" == "gitlab" ]]; then
+        if [[ "${_tag_name}" == "commit" ]]; then
+          _uri="${_url}/-/archive/${_tag}/${_tag}.${_archive_format}"
+        fi
+      fi
+    fi
+    _src="${_tarfile}::${_uri}"
   fi
 fi
 if [[ "${_ns}" == "gnu" ]]; then
   _src="${_tarfile}::${_uri}"
   _src_sig="${_tarfile}.sig::${_uri}.sig"
   _sig_sum='SKIP'
+  _sum='91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
+  _src="${_tarfile}::${_uri}"
 fi
 source=(
   "${_src}"
   "${_src_sig}"
 )
 sha256sums=(
-  '91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
-  'SKIP'
+  "${_sum}"
+  "${_sig_sum}"
 )
-validpgpkeys=(
-  # Andreas Enge
-  'AD17A21EF8AED8F1CC02DBD9F7D5C9BF765C61E3'
-)
+if [[ "${_ns}" == "gnu" ]]; then
+  validpgpkeys=(
+    # Andreas Enge
+    'AD17A21EF8AED8F1CC02DBD9F7D5C9BF765C61E3'
+  )
+elif [[ "${_ns}" == "themartiancompany" ]]; then
+  validpgpkeys=(
+    # Truocolo
+    #   <truocolo@aol.com>
+    '97E989E6CF1D2C7F7A41FF9F95684DBE23D6A3E9'
+    #   <truocolo@0x6E5163fC4BFc1511Dbe06bB605cc14a3e462332b>
+    'F690CBC17BD1F53557290AF51FC17D540D0ADEED'
+    # Pellegrino Prevete (dvorak)
+    #   <dvorak@0x87003Bd6C074C713783df04f36517451fF34CBEf>
+    '12D8E3D7888F741E89F86EE0FEC8567A644F1D16'
+  )
+fi
+
 
 prepare() {
   if [[ "${_git}" == "false" ]]; then
