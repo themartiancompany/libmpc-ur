@@ -243,14 +243,14 @@ elif [[ "${_evmfs}" == "false" ]]; then
 fi
 if [[ "${_ns}" == "gnu" ]]; then
   _src="${_tarfile}::${_uri}"
-  _src_sig="${_tarfile}.sig::${_uri}.sig"
+  _sig_src="${_tarfile}.sig::${_uri}.sig"
   _sig_sum='SKIP'
   _sum='91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
   _src="${_tarfile}::${_uri}"
 fi
 source=(
   "${_src}"
-  "${_src_sig}"
+  "${_sig_src}"
 )
 sha256sums=(
   "${_sum}"
