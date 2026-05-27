@@ -134,21 +134,21 @@ pkgname="lib${_pkg}"
 pkgver=1.4.1
 _commit="532a18ae8222f928c58f7ffd1b4f0122062172bd"
 _bundle_commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
-pkgrel=2
+pkgrel=3
 _pkgdesc=(
   'Library for the arithmetic of complex'
   'numbers with arbitrarily high precision.'
 )
 arch=(
-  aarch64
-  arm
-  armv7l
-  armv8l
-  i686
-  mips
-  powerpc
-  pentium4
-  x86_64
+  "aarch64"
+  "arm"
+  "armv7l"
+  "armv8l"
+  "i686"
+  "mips"
+  "powerpc"
+  "pentium4"
+  "x86_64"
 )
 url="http://www.${_pkg_alt}.org"
 license=(
