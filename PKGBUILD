@@ -130,7 +130,10 @@ if [[ ! -v "_archive_format" ]]; then
 fi
 _pkg=mpc
 _pkg_alt=multiprecision
-pkgname="lib${_pkg}"
+pkgbase="lib${_pkg}"
+pkgname=(
+  "${pkgbase}"
+)
 pkgver=1.4.1
 _commit="532a18ae8222f928c58f7ffd1b4f0122062172bd"
 _bundle_commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
