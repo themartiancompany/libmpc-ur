@@ -208,6 +208,7 @@ _sig_src="${_tarfile}.sig::${_sig_uri}"
 if [[ "${_evmfs}" == "true" ]]; then
   if [[ "${_git}" == "true" ]]; then
     _src="${_evmfs_src}"
+    _sum="${_bundle_sum}"
     _sig_sum="${_bundle_sig_sum}"
     source+=(
       "${_sig_src}"
