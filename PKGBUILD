@@ -84,6 +84,7 @@ if [[ ! -v "_archive_format" ]]; then
   fi
 fi
 _pkg=mpc
+_pkg_alt=multiprecision
 pkgname="lib${_pkg}"
 pkgver=1.4.1
 _commit="b8c90939ef1dc32cfbaa1823fe9e676ad5515ef4"
@@ -121,6 +122,9 @@ if [[ "${_os}" == "Msys" ]]; then
     "windows-default-manifest"
   )
 fi
+provides=(
+  "${_pkg_alt}=${pkgver}"
+)
 # Tallero
 _evmfs_ns="0x6ec7cC56dCeC0a00CB15E97C64B1a5Ec7A31403c"
 _bundle_sum="4c58b9172bdf60fad14f115a6d613c3adab1914fa7d461de6da870ab6d35b7fe"
