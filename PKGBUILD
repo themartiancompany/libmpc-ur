@@ -186,6 +186,7 @@ _evmfs_ns="0x6ec7cC56dCeC0a00CB15E97C64B1a5Ec7A31403c"
 _bundle_sum="4c58b9172bdf60fad14f115a6d613c3adab1914fa7d461de6da870ab6d35b7fe"
 _bundle_sig_sum="a9c129ca1b913ca0bddfbe451abdff8723aa735c3a4d5240d64f15236bd7ba0b"
 _gnu_sum='91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
+_gnu_sig_sum_hinge="3752a19777570c8c23db295c0b36c447f013338815dc7aec9c38cb6403ddd5bd"
 if [[ ! -v "_tag" ]]; then
   if [[ "${_git}" == "false" ]]; then
     if [[ "${_ns}" == "gnu" ]]; then
