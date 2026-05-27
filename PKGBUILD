@@ -185,6 +185,7 @@ provides=(
 _evmfs_ns="0x6ec7cC56dCeC0a00CB15E97C64B1a5Ec7A31403c"
 _bundle_sum="4c58b9172bdf60fad14f115a6d613c3adab1914fa7d461de6da870ab6d35b7fe"
 _bundle_sig_sum="a9c129ca1b913ca0bddfbe451abdff8723aa735c3a4d5240d64f15236bd7ba0b"
+_gnu_sum='91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
 if [[ ! -v "_tag" ]]; then
   if [[ "${_git}" == "false" ]]; then
     if [[ "${_ns}" == "gnu" ]]; then
@@ -227,6 +228,15 @@ elif [[ "${_evmfs}" == "false" ]]; then
       _http="https://ftp.gnu.org"
       _url="${_http}/${_ns}/${_pkg}"
       _uri="${_url}/${_tarname}.tar.xz"
+      _sum="${_gnu_sum}"
+      _sig_src="${_tarfile}.sig::${_uri}.sig"
+      _sig_sum="SKIP"
+      source+=(
+        "${_sig_src}"
+      )
+      sha256sums+=(
+        "${_sig_sum}"
+      )
     elif [[ "${_ns}" == "themartiancompany" ]]; then
       if [[ "${_git_service}" == "github" ]]; then
         if [[ "${_tag_name}" == "commit" ]]; then
@@ -246,7 +256,6 @@ if [[ "${_ns}" == "gnu" ]]; then
   _src="${_tarfile}::${_uri}"
   _sig_src="${_tarfile}.sig::${_uri}.sig"
   _sig_sum='SKIP'
-  _sum='91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931'
   _src="${_tarfile}::${_uri}"
 fi
 source=(
